@@ -1,5 +1,8 @@
 # TOON for Ruby
 
+[![Gem Version](https://badge.fury.io/rb/toon-ruby.svg)](https://badge.fury.io/rb/toon-ruby)
+[![Build Status](https://github.com/andrepcg/toon-ruby/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/andrepcg/toon-ruby/actions/workflows/ci.yml)
+
 **Token-Oriented Object Notation** is a compact, human-readable format designed for passing structured data to Large Language Models with significantly reduced token usage.
 
 This is a Ruby port of the [TOON library](https://github.com/johannschopplich/toon) originally written in TypeScript.
