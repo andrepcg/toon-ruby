@@ -629,4 +629,3 @@ The gem is available as open source under the terms of the [MIT License](LICENSE
 ## Credits
 
 This is a Ruby port of the original [TOON library](https://github.com/johannschopplich/toon) by [Johann Schopplich](https://github.com/johannschopplich).
-```
