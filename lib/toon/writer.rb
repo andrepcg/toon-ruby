@@ -16,4 +16,5 @@ module Toon
       @lines.join("\n")
     end
   end
+  private_constant :LineWriter
 end

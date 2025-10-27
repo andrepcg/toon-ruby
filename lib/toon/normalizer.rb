@@ -9,14 +9,12 @@ module Toon
 
     # Normalization (unknown → JSON-compatible value)
     def normalize_value(value)
-      # null
-      return nil if value.nil?
-
-      # Primitives
-      return value if value.is_a?(String) || value.is_a?(TrueClass) || value.is_a?(FalseClass)
-
-      # Numbers: handle special cases
-      if value.is_a?(Numeric)
+      case value
+      when nil
+        nil
+      when String, TrueClass, FalseClass
+        value
+      when Numeric
         # Float special cases
         if value.is_a?(Float)
           # -0.0 becomes 0
@@ -24,48 +22,25 @@ module Toon
           # NaN and Infinity become nil
           return nil unless value.finite?
         end
-        return value
+        value
+      when Symbol
+        value.to_s
+      when Time
+        value.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+      when ->(v) { v.respond_to?(:iso8601) && !v.is_a?(Date) }
+        value.iso8601
+      when Date
+        value.to_time.utc.iso8601
+      when Array
+        value.map { |v| normalize_value(v) }
+      when Set
+        value.to_a.map { |v| normalize_value(v) }
+      when Hash
+        value.each_with_object({}) { |(k, v), h| h[k.to_s] = normalize_value(v) }
+      else
+        # Fallback: anything else becomes nil (functions, etc.)
+        nil
       end
-
-      # Symbol → string
-      return value.to_s if value.is_a?(Symbol)
-
-      # Time → ISO8601 string
-      if value.is_a?(Time)
-        return value.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
-      end
-
-      # DateTime → ISO8601 string
-      if value.respond_to?(:iso8601) && !value.is_a?(Date)
-        return value.iso8601
-      end
-
-      # Date → ISO8601 string
-      if value.is_a?(Date)
-        return value.to_time.utc.iso8601
-      end
-
-      # Array
-      if value.is_a?(Array)
-        return value.map { |v| normalize_value(v) }
-      end
-
-      # Set → array
-      if value.is_a?(Set)
-        return value.to_a.map { |v| normalize_value(v) }
-      end
-
-      # Hash/object
-      if value.is_a?(Hash)
-        result = {}
-        value.each do |k, v|
-          result[k.to_s] = normalize_value(v)
-        end
-        return result
-      end
-
-      # Fallback: anything else becomes nil (functions, etc.)
-      nil
     end
 
     # Type guards

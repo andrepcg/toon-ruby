@@ -115,7 +115,7 @@ Toon.encode({ 'items' => items })
 # => "items[2]{sku,qty,price}:\n  A1,2,9.99\n  B2,1,14.5"
 
 # Custom delimiter (tab)
-Toon.encode(items, delimiter: "\t")
+Toon.encode({ 'items' => items }, delimiter: "\t")
 # => "items[2\t]{sku\tqty\tprice}:\n  A1\t2\t9.99\n  B2\t1\t14.5"
 
 # Length marker
