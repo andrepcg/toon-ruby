@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yml
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Verify tag matches version
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          GEM_VERSION=$(ruby -r ./lib/toon/version.rb -e "puts Toon::VERSION")
+
+          if [ "$TAG_VERSION" != "$GEM_VERSION" ]; then
+            echo "Error: Tag version (v$TAG_VERSION) doesn't match gem version ($GEM_VERSION)"
+            exit 1
+          fi
+
+          echo "Version check passed: v$GEM_VERSION"
+
+      - name: Build gem
+        run: gem build toon-ruby.gemspec
+
+      - name: Publish to RubyGems
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_KEY }}
+        run: |
+          mkdir -p ~/.gem
+          cat << EOF > ~/.gem/credentials
+          ---
+          :rubygems_api_key: ${GEM_HOST_API_KEY}
+          EOF
+          chmod 0600 ~/.gem/credentials
+          gem push toon-ruby-*.gem
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: toon-ruby-*.gem
+          generate_release_notes: true
+          body: |
+            ## What's Changed
+
+            Released version ${{ github.ref_name }}
+
+            ### Installation
+            ```bash
+            gem install toon-ruby
+            ```
+
+            Or add to your Gemfile:
+            ```ruby
+            gem 'toon-ruby', '~> ${{ github.ref_name }}'
+            ```
