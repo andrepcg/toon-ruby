@@ -16,13 +16,15 @@ module Toon
         return Primitives.encode_primitive(value, options[:delimiter])
       end
 
-      writer = LineWriter.new(options[:indent])
+      writer = LineWriter.new(options[:indent], options[:output])
 
       if Normalizer.json_array?(value)
         encode_array(nil, value, writer, 0, options)
       elsif Normalizer.json_object?(value)
         encode_object(value, writer, 0, options)
       end
+
+      options[:output] and return
 
       writer.to_s
     end

@@ -771,4 +771,20 @@ RSpec.describe Toon do
       expect(Toon.encode(obj)).to eq('tags[3]: reading,gaming,coding')
     end
   end
+
+  describe 'output option' do
+    let :obj do
+      { 'hello' => '世界' }
+    end
+
+    it 'can encode lines to IO interface object' do
+      output = StringIO.new
+      expect(Toon.encode(obj, output:)).to be_nil
+      expect(output.string).to eq "hello: 世界"
+    end
+
+    it 'can encode with return value' do
+      expect(Toon.encode(obj)).to eq 'hello: 世界'
+    end
+  end
 end
