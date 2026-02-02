@@ -17,17 +17,19 @@ module Toon
   # @param delimiter [String] Delimiter for array values and tabular rows (default: ',')
   # @param length_marker [String, false] Optional marker to prefix array lengths (default: false)
   # @return [String] TOON-formatted string
-  def encode(input, indent: 2, delimiter: DEFAULT_DELIMITER, length_marker: false)
+  # @return [nil] if writing to output
+  def encode(input, indent: 2, delimiter: DEFAULT_DELIMITER, length_marker: false, output: nil)
     normalized_value = Normalizer.normalize_value(input)
-    options = resolve_options(indent: indent, delimiter: delimiter, length_marker: length_marker)
+    options = resolve_options(indent: indent, delimiter: delimiter, length_marker: length_marker, output:)
     Encoders.encode_value(normalized_value, options)
   end
 
-  def resolve_options(indent:, delimiter:, length_marker:)
+  def resolve_options(indent:, delimiter:, length_marker:, output:)
     {
       indent: indent,
       delimiter: delimiter,
-      length_marker: length_marker
+      length_marker: length_marker,
+      output: output
     }
   end
 end
