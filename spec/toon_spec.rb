@@ -779,7 +779,7 @@ RSpec.describe Toon do
 
     it 'can encode lines to IO interface object' do
       output = StringIO.new
-      expect(Toon.encode(obj, output:)).to be_nil
+      expect(Toon.encode(obj, output: output)).to be_nil
       expect(output.string).to eq "hello: 世界"
     end
 

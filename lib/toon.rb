@@ -20,11 +20,11 @@ module Toon
   # @return [nil] if writing to output
   def encode(input, indent: 2, delimiter: DEFAULT_DELIMITER, length_marker: false, output: nil)
     normalized_value = Normalizer.normalize_value(input)
-    options = resolve_options(indent: indent, delimiter: delimiter, length_marker: length_marker, output:)
+    options = resolve_options(indent: indent, delimiter: delimiter, length_marker: length_marker, output: output)
     Encoders.encode_value(normalized_value, options)
   end
 
-  def resolve_options(indent:, delimiter:, length_marker:, output:)
+  def resolve_options(indent:, delimiter:, length_marker:, output: nil)
     {
       indent: indent,
       delimiter: delimiter,
